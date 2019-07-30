@@ -1,0 +1,148 @@
+<?xml version="1.0"?>
+<!--
+  Copyright 2015 Fadri Furrer, ASL, ETH Zurich, Switzerland
+  Copyright 2015 Michael Burri, ASL, ETH Zurich, Switzerland
+  Copyright 2015 Mina Kamel, ASL, ETH Zurich, Switzerland
+  Copyright 2015 Janosch Nikolic, ASL, ETH Zurich, Switzerland
+  Copyright 2015 Markus Achtelik, ASL, ETH Zurich, Switzerland
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+  
+  <!-- Property Blocks -->
+  <xacro:property name="cable_inertia">
+    <inertia 
+    ixx="${1/12 * cable_mass * (cable_length * cable_length + cable_width * cable_width)}"
+    iyy="${1/12 * cable_mass * (cable_length * cable_length + cable_width * cable_width)}"
+    izz="${1/12 * cable_mass * (cable_width * cable_width + cable_width * cable_width)}"    
+    ixy="0.0" ixz="0.0" iyz="0.0" /> <!-- [kg.m^2] [kg.m^2] [kg.m^2] [kg.m^2] [kg.m^2] [kg.m^2] -->
+  </xacro:property>
+  
+  <xacro:property name="load_inertia">
+    <inertia 
+    ixx="${2/5 * load_mass * load_radius * load_radius}"
+    iyy="${2/5 * load_mass * load_radius * load_radius}"
+    izz="${2/5 * load_mass * load_radius * load_radius}"  
+    ixy="0.0" ixz="0.0" iyz="0.0" /> <!-- [kg.m^2] [kg.m^2] [kg.m^2] [kg.m^2] [kg.m^2] [kg.m^2] -->
+  </xacro:property>
+
+  <xacro:property name="fake_joint_inertia">
+    <inertia 
+    ixx="1e-03"
+    iyy="1e-03"
+    izz="1e-03"  
+    ixy="0.0" ixz="0.0" iyz="0.0" /> <!-- [kg.m^2] [kg.m^2] [kg.m^2] [kg.m^2] [kg.m^2] [kg.m^2] -->
+  </xacro:property>
+  
+
+  <!-- Main multirotor link -->
+  <xacro:macro name="load_macro"
+    params="load_mass load_radius cable_mass fake_joint_mass cable_length cable_width cable_color load_color">
+
+    <link name="cable_link">
+      <inertial>
+        <mass value="${cable_mass}" />  <!-- [kg] -->
+        <origin xyz="0 0 ${cable_length/2}" />
+        <xacro:insert_block name="cable_inertia" />
+      </inertial>
+
+      <visual>
+        <origin xyz="0 0 ${cable_length/2}" rpy="0 0 0" />
+        <geometry>
+          <box size="${cable_width} ${cable_width} ${cable_length}"/> <!-- [m] [m] [m] -->
+        </geometry>
+      </visual>
+      
+      <!-- <collision>
+        <origin xyz="0 0 ${cable_length/2}" rpy="0 0 0" />
+        <geometry>
+          <box size="${cable_width} ${cable_width} ${cable_length}" /> 
+        </geometry>
+      </collision> -->
+    </link>
+
+    <link name="load_link">
+      <inertial>
+        <mass value="${load_mass}" />  <!-- [kg] -->
+        <origin xyz="0 0 0" />
+        <xacro:insert_block name="load_inertia" />
+      </inertial>
+
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <geometry>
+          <sphere radius="${load_radius}"/> <!-- [m] -->
+        </geometry>
+      </visual>
+
+      <!-- <collision>
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <geometry>
+          <sphere radius="${load_radius}"/>
+        </geometry>
+      </collision> -->
+    </link>
+
+    <joint name="load_cable" type="fixed">
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <parent link="load_link" />
+      <child link="cable_link" />
+    </joint>
+
+    <xacro:spherical_joint_xy
+       parent_link="cable_link"
+       child_link="base_link">
+    </xacro:spherical_joint_xy>
+  </xacro:macro>
+
+
+  <xacro:property name="cable_origin">
+    <origin xyz="0.0 0.0 ${cable_length}" />
+  </xacro:property>
+
+  <!-- Main multirotor link -->
+  <xacro:macro name="spherical_joint_xy"
+    params="parent_link child_link">
+
+    <link name="fake_joint_${parent_link}_${child_link}">
+        <inertial>
+            <mass value="${fake_joint_mass}" />  <!-- [kg] -->
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <xacro:insert_block name="fake_joint_inertia" />
+        </inertial>
+        <visual>
+          <origin xyz="0 0 0" rpy="0 0 0" />
+          <geometry>
+            <sphere radius="${load_radius/5}"/> <!-- [m] -->
+          </geometry>
+        </visual>
+    </link>
+    
+    <joint name="fake_joint_${parent_link}_${child_link}_x" type="continuous">
+      <xacro:insert_block name="cable_origin" />
+      <axis xyz="1 0 0" />
+      <parent link="${parent_link}" />
+      <child link="fake_joint_${parent_link}_${child_link}" />
+    </joint>
+
+    <joint name="fake_joint_${parent_link}_${child_link}_y" type="continuous">
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <axis xyz="0 1 0" />
+      <parent link="fake_joint_${parent_link}_${child_link}" />
+      <child link="${child_link}" />
+    </joint>
+
+  </xacro:macro>
+</robot>
