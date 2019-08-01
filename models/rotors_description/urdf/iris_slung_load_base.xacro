@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<robot name="iris" xmlns:xacro="http://ros.org/wiki/xacro">
+<robot name="iris_slung_load" xmlns:xacro="http://ros.org/wiki/xacro">
   <!-- Properties that can be assigned at build time as arguments.
   Is there a reason not to make all properties arguments?
   -->
@@ -193,8 +193,8 @@
 
   <xacro:load_macro
       load_mass="0.25"
-      load_radius="0.01"
-      cable_mass="0.004" 
+      load_radius="0.05"
+      cable_mass="0.004"
       fake_joint_mass="1e-3"
       cable_length="1.0"
       cable_width="0.01"

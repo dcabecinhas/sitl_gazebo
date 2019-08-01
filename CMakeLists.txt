@@ -254,6 +254,43 @@ add_custom_command(OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/models/${model_name}/${mod
   )
 add_custom_target(sdf_slung_load ALL DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/models/${model_name}/${model_name}.sdf)
 
+# Iris with RB load
+
+set(enable_mavlink_interface "true")
+set(enable_ground_truth "true")
+set(enable_logging "false")
+set(enable_camera "false")
+set(enable_wind "true")
+set(rotors_description_dir "${CMAKE_CURRENT_SOURCE_DIR}/models/rotors_description")
+set(scripts_dir "${CMAKE_CURRENT_SOURCE_DIR}/scripts")
+# set the vision estimation to be sent if set by the CMake option SEND_VISION_ESTIMATION_DATA
+set(send_vision_estimation "false")
+if (SEND_VISION_ESTIMATION_DATA)
+  set(send_vision_estimation "true")
+endif()
+
+# if SEND_ODOMETRY_DATA option is set, then full odometry data is sent instead of
+# only the visual pose estimate
+set(send_odometry "false")
+if (SEND_ODOMETRY_DATA)
+  set(send_odometry "true")
+  set(send_vision_estimation "false")
+endif()
+
+set(model_name "iris_rb_load")
+add_custom_command(OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/models/${model_name}/${model_name}.sdf
+  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+  COMMAND rm -f ${CMAKE_CURRENT_SOURCE_DIR}/models/${model_name}/${model_name}.sdf
+  COMMAND ${PYTHON_EXECUTABLE} ${scripts_dir}/xacro.py -o  ${rotors_description_dir}/urdf/${model_name}_base.urdf  ${rotors_description_dir}/urdf/${model_name}_base.xacro enable_mavlink_interface:=${enable_mavlink_interface} enable_ground_truth:=${enable_ground_truth} enable_wind:=${enable_wind} enable_logging:=${enable_logging} rotors_description_dir:=${rotors_description_dir} send_vision_estimation:=${send_vision_estimation} send_odometry:=${send_odometry}
+  COMMAND gz sdf -p  ${rotors_description_dir}/urdf/${model_name}_base.urdf >> ${CMAKE_CURRENT_SOURCE_DIR}/models/${model_name}/${model_name}.sdf
+  # COMMAND rm -f ${rotors_description_dir}/urdf/${model_name}_base.urdf
+  DEPENDS ${rotors_description_dir}/urdf/${model_name}.xacro
+  DEPENDS ${rotors_description_dir}/urdf/${model_name}_base.xacro
+  DEPENDS ${rotors_description_dir}/urdf/component_snippets.xacro
+  DEPENDS ${rotors_description_dir}/urdf/slung_load.xacro
+  )
+add_custom_target(sdf_rb_load ALL DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/models/${model_name}/${model_name}.sdf)
+
 
 #-----------#
 # Functions #
