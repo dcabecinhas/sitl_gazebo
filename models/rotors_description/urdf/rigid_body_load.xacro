@@ -1,0 +1,182 @@
+<?xml version="1.0"?>
+
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+
+  <!-- Rigid body load -->
+
+  <xacro:property name="rb_inertia">
+    <inertia
+    ixx="${1/12 * rb_mass * (rb_height * rb_height + rb_width * rb_width)}"
+    iyy="${1/12 * rb_mass * (rb_length * rb_length + rb_height * rb_height)}"
+    izz="${1/12 * rb_mass * (rb_length * rb_length + rb_width * rb_width)}"
+    ixy="0.0" ixz="0.0" iyz="0.0" /> <!-- [kg.m^2] [kg.m^2] [kg.m^2] [kg.m^2] [kg.m^2] [kg.m^2] -->
+  </xacro:property>
+
+  <!-- Cable -->
+
+  <xacro:property name="cable_attachment_origin">
+    <origin xyz="0.0 0.0 ${cable_length/2}" />
+  </xacro:property>
+
+  <xacro:property name="cable_inertia">
+    <inertia
+    ixx="${1/12 * cable_mass * cable_length * cable_length + 1/4 * cable_mass * cable_radius * cable_radius}"
+    iyy="${1/12 * cable_mass * cable_length * cable_length + 1/4 * cable_mass * cable_radius * cable_radius}"
+    izz="${1/2 * cable_mass * cable_radius * cable_radius}"
+    ixy="0.0" ixz="0.0" iyz="0.0" /> <!-- [kg.m^2] [kg.m^2] [kg.m^2] [kg.m^2] [kg.m^2] [kg.m^2] -->
+  </xacro:property>
+
+  <xacro:property name="fake_joint_inertia">
+    <inertia
+    ixx="${fake_joint_inertia}"
+    iyy="${fake_joint_inertia}"
+    izz="${fake_joint_inertia}"
+    ixy="0.0" ixz="0.0" iyz="0.0" /> <!-- [kg.m^2] [kg.m^2] [kg.m^2] [kg.m^2] [kg.m^2] [kg.m^2] -->
+  </xacro:property>
+
+  <!-- Macro Blocks -->
+
+  <!-- Cable Macro -->
+
+  <xacro:macro name="cable_macro"
+    params="parent child cable_number cable_mass cable_length cable_radius cable_color fake_joint_mass fake_joint_inertia *attachment_point">
+
+    <xacro:spherical_joint_xy
+       parent_link="${parent}"
+       child_link="cable_link_${cable_number}"
+       fake_joint_mass="${fake_joint_mass}"
+       fake_joint_inertia="${fake_joint_inertia}">
+       <xacro:insert_block name="attachment_point" />
+    </xacro:spherical_joint_xy>
+
+    <xacro:spherical_joint_yx
+       parent_link="cable_link_${cable_number}"
+       child_link="${child}"
+       fake_joint_mass="${fake_joint_mass}"
+       fake_joint_inertia="${fake_joint_inertia}">
+       <origin xyz="0.0 0.0 ${cable_length}" />
+    </xacro:spherical_joint_yx>
+
+    <link name="cable_link_${cable_number}">
+      <inertial>
+        <xacro:insert_block name="cable_attachment_origin" />
+        <mass value="${cable_mass}" />  <!-- [kg] -->
+        <xacro:insert_block name="cable_inertia" />
+      </inertial>
+
+      <visual>
+        <xacro:insert_block name="cable_attachment_origin" />
+        <geometry>
+          <cylinder length="${cable_length}" radius="${cable_radius}"/> <!-- [m] [m] [m] -->
+        </geometry>
+      </visual>
+      <collision>
+        <xacro:insert_block name="cable_attachment_origin" />
+        <geometry>
+          <cylinder length="${cable_length}" radius="${cable_radius}"/>
+        </geometry>
+      </collision>
+    </link>
+
+    <gazebo reference="cable_link_${cable_number}">
+      <material>Gazebo/${cable_color}</material>
+    </gazebo>
+
+  </xacro:macro>
+
+  <!-- Spherical joint emulation Macro -->
+
+  <xacro:macro name="spherical_joint_xy"
+    params="parent_link child_link fake_joint_mass fake_joint_inertia *attachment_point">
+
+    <link name="fake_joint_${parent_link}_${child_link}">
+        <inertial>
+            <mass value="${fake_joint_mass}" />  <!-- [kg] -->
+            <xacro:insert_block name="fake_joint_inertia" />
+        </inertial>
+        <visual>
+          <geometry>
+            <sphere radius="0.01"/>
+          </geometry>
+        </visual>
+    </link>
+
+    <joint name="fake_joint_${parent_link}_${child_link}_x" type="continuous">
+      <xacro:insert_block name="attachment_point" />
+      <axis xyz="1 0 0" />
+      <parent link="${parent_link}" />
+      <child link="fake_joint_${parent_link}_${child_link}" />
+      <dynamics damping="0.001" friction="0.001"/>
+    </joint>
+
+    <joint name="fake_joint_${parent_link}_${child_link}_y" type="continuous">
+      <axis xyz="0 1 0"/>
+      <parent link="fake_joint_${parent_link}_${child_link}" />
+      <child link="${child_link}" />
+      <dynamics damping="0.001" friction="0.001"/>
+    </joint>
+  </xacro:macro>
+
+  <xacro:macro name="spherical_joint_yx"
+    params="parent_link child_link fake_joint_mass fake_joint_inertia *attachment_point">
+
+    <link name="fake_joint_${parent_link}_${child_link}">
+        <inertial>
+            <mass value="${fake_joint_mass}" />  <!-- [kg] -->
+            <xacro:insert_block name="fake_joint_inertia" />
+        </inertial>
+        <visual>
+          <geometry>
+            <sphere radius="0.01"/>
+          </geometry>
+        </visual>
+    </link>
+
+    <joint name="fake_joint_${parent_link}_${child_link}_y" type="continuous">
+      <xacro:insert_block name="attachment_point" />
+      <axis xyz="0 1 0" />
+      <parent link="${parent_link}" />
+      <child link="fake_joint_${parent_link}_${child_link}" />
+      <dynamics damping="0.001" friction="0.001"/>
+    </joint>
+
+    <joint name="fake_joint_${parent_link}_${child_link}_x" type="continuous">
+      <axis xyz="1 0 0"/>
+      <parent link="fake_joint_${parent_link}_${child_link}" />
+      <child link="${child_link}" />
+      <dynamics damping="0.001" friction="0.001"/>
+    </joint>
+  </xacro:macro>
+
+  <!-- Rigid-body load Macro -->
+
+  <xacro:macro name="rb_load"
+    params="rb_mass rb_length rb_width rb_height rb_color">
+
+    <link name="rb_link">
+      <inertial>
+        <mass value="${rb_mass}" />  <!-- [kg] -->
+        <origin xyz="0 0 0" />
+        <xacro:insert_block name="rb_inertia" />
+      </inertial>
+      <visual>
+        <geometry>
+          <box size="${rb_length} ${rb_width} ${rb_height}"/> <!-- [m] [m] [m] -->
+        </geometry>
+      </visual>
+      <collision>
+        <geometry>
+          <box size="${rb_length} ${rb_width} ${rb_height}"/>
+        </geometry>
+      </collision>
+    </link>
+
+    <gazebo reference="rb_link">
+      <material>Gazebo/${rb_color}</material>
+    </gazebo>
+  </xacro:macro>
+
+
+
+
+</robot>

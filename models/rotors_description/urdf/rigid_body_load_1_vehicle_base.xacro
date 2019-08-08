@@ -1,0 +1,87 @@
+<?xml version="1.0"?>
+
+<robot name="rigid_body_load_1_vehicle" xmlns:xacro="http://ros.org/wiki/xacro">
+  <!-- Properties that can be assigned at build time as arguments.
+  Is there a reason not to make all properties arguments?
+  -->
+
+  <xacro:arg name='name' default='rigid_body_load_1_vehicle' />
+  <xacro:arg name='mavlink_addr' default='INADDR_ANY' />
+  <xacro:arg name='serial_enabled' default='false' />
+  <xacro:arg name='serial_device' default='/dev/ttyACM0' />
+  <xacro:arg name='baudrate' default='921600' />
+  <xacro:arg name='qgc_addr' default='INADDR_ANY' />
+  <xacro:arg name='sdk_addr' default='INADDR_ANY' />
+  <xacro:arg name='hil_mode' default='false' />
+  <xacro:arg name='hil_state_level' default='false' />
+  <xacro:arg name='send_vision_estimation' default='false' />
+  <xacro:arg name='send_odometry' default='false' />
+  <xacro:arg name='enable_lockstep' default='true' />
+  <xacro:arg name='use_tcp' default='true' />
+  <xacro:arg name='vehicle_is_tailsitter' default='false' />
+  <xacro:arg name='visual_material' default='DarkGrey' />
+  <xacro:arg name='enable_mavlink_interface' default='true' />
+  <xacro:arg name='enable_wind' default='false' />
+  <!-- The following causes segfault with multiple vehicles if defaults to true!!! -->
+  <xacro:arg name='enable_ground_truth' default='false' />
+  <xacro:arg name='enable_logging' default='false' />
+  <xacro:arg name='log_file' default='iris' />
+
+  <!-- Rigid body load -->
+  <xacro:arg name='rb_mass' default='0.3' />
+  <xacro:arg name='rb_length' default='0.1' />
+  <xacro:arg name='rb_width' default='0.1' />
+  <xacro:arg name='rb_height' default='0.1' />
+  <xacro:arg name='rb_color' default='Gold' />
+  <xacro:arg name='fake_joint_mass' default='1e-3' />
+  <xacro:arg name='fake_joint_inertia' default='1e-3' />
+  <xacro:arg name='cable_mass' default='1e-3' />
+  <xacro:arg name='cable_length' default='0.8' />
+  <xacro:arg name='cable_radius' default='0.01' />
+  <xacro:arg name='cable_color' default='White' />
+
+  <!-- IRIS -->
+
+  <xacro:property name='ID' value='0' />
+  <xacro:property name="namespace" value="iris_${ID}" />
+  <xacro:property name='base_link' value='base_link_${ID}' />
+  <xacro:property name='base_joint' value='base_joint_${ID}' />
+  <xacro:property name='mavlink_udp_port' value='1456${ID}' />
+  <xacro:property name='mavlink_tcp_port' value='456${ID}' />
+  <xacro:property name='qgc_udp_port' value='1455${ID}' />
+  <xacro:property name='sdk_udp_port' value='1454${ID}' />
+
+
+  <!-- macros for gazebo plugins, sensors -->
+  <xacro:include filename="$(arg rotors_description_dir)/urdf/generic_iris_component_snippets.xacro" />
+
+  <!-- Instantiate iris "mechanics" -->
+  <xacro:include filename="$(arg rotors_description_dir)/urdf/generic_iris.xacro" />
+
+  <!-- Instantiate other iris elements -->
+  <xacro:include filename="$(arg rotors_description_dir)/urdf/generic_iris_others.xacro" />
+
+  <!-- Rigid body and cables -->
+
+  <xacro:include filename="$(arg rotors_description_dir)/urdf/rigid_body_load.xacro" />
+
+  <xacro:rb_load
+    rb_mass="$(arg rb_mass)"
+    rb_length="$(arg rb_length)"
+    rb_width="$(arg rb_width)"
+    rb_height="$(arg rb_height)"
+    rb_color="$(arg rb_color)"
+  />
+
+  <xacro:cable_macro parent="rb_link" child="base_link_0" cable_number="0"
+    cable_mass="$(arg cable_mass)"
+    cable_length="$(arg cable_length)"
+    cable_radius="$(arg cable_radius)"
+    cable_color="$(arg cable_color)"
+    fake_joint_mass="$(arg fake_joint_mass)"
+    fake_joint_inertia="$(arg fake_joint_inertia)">
+    <origin xyz="0.0 0.0 ${$(arg rb_height)/2}" />
+  </xacro:cable_macro>
+
+
+</robot>
