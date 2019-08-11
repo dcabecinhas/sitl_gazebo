@@ -2,6 +2,8 @@
 
 <robot xmlns:xacro="http://ros.org/wiki/xacro">
 
+  <xacro:property name='fake_joint_damping' value='0.0' />
+  <xacro:property name='fake_joint_friction' value='0.0' />
   <!-- Rigid body load -->
 
   <xacro:property name="rb_inertia">
@@ -106,14 +108,14 @@
       <axis xyz="1 0 0" />
       <parent link="${parent_link}" />
       <child link="fake_joint_${parent_link}_${child_link}" />
-      <dynamics damping="0.001" friction="0.001"/>
+      <dynamics damping="${fake_joint_damping}" friction="${fake_joint_friction}"/>
     </joint>
 
     <joint name="fake_joint_${parent_link}_${child_link}_y" type="continuous">
       <axis xyz="0 1 0"/>
       <parent link="fake_joint_${parent_link}_${child_link}" />
       <child link="${child_link}" />
-      <dynamics damping="0.001" friction="0.001"/>
+      <dynamics damping="${fake_joint_damping}" friction="${fake_joint_friction}"/>
     </joint>
   </xacro:macro>
 
@@ -137,14 +139,14 @@
       <axis xyz="0 1 0" />
       <parent link="${parent_link}" />
       <child link="fake_joint_${parent_link}_${child_link}" />
-      <dynamics damping="0.001" friction="0.001"/>
+      <dynamics damping="${fake_joint_damping}" friction="${fake_joint_friction}"/>
     </joint>
 
     <joint name="fake_joint_${parent_link}_${child_link}_x" type="continuous">
       <axis xyz="1 0 0"/>
       <parent link="fake_joint_${parent_link}_${child_link}" />
       <child link="${child_link}" />
-      <dynamics damping="0.001" friction="0.001"/>
+      <dynamics damping="${fake_joint_damping}" friction="${fake_joint_friction}"/>
     </joint>
   </xacro:macro>
 
