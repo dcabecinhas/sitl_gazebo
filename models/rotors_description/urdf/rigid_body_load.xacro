@@ -1,9 +1,6 @@
 <?xml version="1.0"?>
 
 <robot xmlns:xacro="http://ros.org/wiki/xacro">
-
-  <xacro:property name='fake_joint_damping' value='0.0' />
-  <xacro:property name='fake_joint_friction' value='0.0' />
   <!-- Rigid body load -->
 
   <xacro:property name="rb_inertia">
@@ -41,7 +38,7 @@
   <!-- Cable Macro -->
 
   <xacro:macro name="cable_macro"
-    params="parent child cable_number cable_mass cable_length cable_radius cable_color fake_joint_mass fake_joint_inertia *attachment_point">
+    params="parent child cable_number cable_mass cable_length cable_radius cable_color fake_joint_mass fake_joint_damping fake_joint_friction fake_joint_inertia *attachment_point">
 
     <xacro:spherical_joint_xy
        parent_link="${parent}"
@@ -117,6 +114,19 @@
       <child link="${child_link}" />
       <dynamics damping="${fake_joint_damping}" friction="${fake_joint_friction}"/>
     </joint>
+
+    <gazebo reference="fake_joint_${parent_link}_${child_link}_x">
+      <sensor name="force_torque" type="force_torque">
+            <update_rate>50</update_rate>
+      </sensor>
+    </gazebo>
+
+    <gazebo reference="fake_joint_${parent_link}_${child_link}_y">
+      <sensor name="force_torque" type="force_torque">
+            <update_rate>50</update_rate>
+      </sensor>
+    </gazebo>
+
   </xacro:macro>
 
   <xacro:macro name="spherical_joint_yx"
@@ -148,6 +158,18 @@
       <child link="${child_link}" />
       <dynamics damping="${fake_joint_damping}" friction="${fake_joint_friction}"/>
     </joint>
+
+    <gazebo reference="fake_joint_${parent_link}_${child_link}_x">
+      <sensor name="force_torque" type="force_torque">
+            <update_rate>50</update_rate>
+      </sensor>
+    </gazebo>
+
+    <gazebo reference="fake_joint_${parent_link}_${child_link}_y">
+      <sensor name="force_torque" type="force_torque">
+            <update_rate>50</update_rate>
+      </sensor>
+    </gazebo>
   </xacro:macro>
 
   <!-- Rigid-body load Macro -->
@@ -172,6 +194,12 @@
         </geometry>
       </collision>
     </link>
+
+    <gazebo reference="rb_link">
+      <sensor name="force_torque" type="force_torque">
+            <update_rate>50</update_rate>
+      </sensor>
+    </gazebo>
 
     <gazebo reference="rb_link">
       <material>Gazebo/${rb_color}</material>

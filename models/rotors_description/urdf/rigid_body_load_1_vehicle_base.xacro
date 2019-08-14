@@ -35,6 +35,8 @@
   <xacro:arg name='rb_color' default='Gold' />
   <xacro:arg name='fake_joint_mass' default='1e-3' />
   <xacro:arg name='fake_joint_inertia' default='1e-3' />
+  <xacro:arg name='fake_joint_damping' default='1e-3' />
+  <xacro:arg name='fake_joint_friction' default='1e-3' />
   <xacro:arg name='cable_mass' default='1e-3' />
   <xacro:arg name='cable_length' default='0.8' />
   <xacro:arg name='cable_radius' default='0.01' />
@@ -79,9 +81,16 @@
     cable_radius="$(arg cable_radius)"
     cable_color="$(arg cable_color)"
     fake_joint_mass="$(arg fake_joint_mass)"
-    fake_joint_inertia="$(arg fake_joint_inertia)">
+    fake_joint_inertia="$(arg fake_joint_inertia)"
+    fake_joint_damping="$(arg fake_joint_damping)"
+    fake_joint_friction="$(arg fake_joint_friction)">
     <origin xyz="0.0 0.0 ${$(arg rb_height)/2}" />
   </xacro:cable_macro>
 
+    <gazebo reference="base_link_0">
+      <sensor name="force_torque" type="force_torque">
+            <update_rate>50</update_rate>
+      </sensor>
+    </gazebo>
 
 </robot>
