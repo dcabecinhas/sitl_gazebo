@@ -87,10 +87,69 @@
     <origin xyz="0.0 0.0 ${$(arg rb_height)/2}" />
   </xacro:cable_macro>
 
-    <gazebo reference="base_link_0">
-      <sensor name="force_torque" type="force_torque">
-            <update_rate>50</update_rate>
-      </sensor>
-    </gazebo>
+  <gazebo>
+    <!-- Groundtruth plugin -->
+    <plugin name="rb_link_groundtruth" filename="libgazebo_ros_p3d.so">
+      <alwaysOn>true</alwaysOn>
+      <updateRate>50.0</updateRate>
+      <bodyName>rb_link</bodyName>
+      <topicName>odom</topicName>
+      <robotNamespace>/rb_link/</robotNamespace>
+      <!-- <gaussianNoise>0.0</gaussianNoise>
+      <frameName>map</frameName>
+      <xyzOffsets>0 0 0</xyzOffsets>
+      <rpyOffsets>0 0 0</rpyOffsets> -->
+    </plugin>
+
+    <plugin name="quadrotor_groundtruth" filename="libgazebo_ros_p3d.so">
+      <alwaysOn>true</alwaysOn>
+      <updateRate>50.0</updateRate>
+      <bodyName>base_link_0</bodyName>
+      <topicName>odom</topicName>
+      <robotNamespace>/quad</robotNamespace>
+      <!-- <gaussianNoise>0.0</gaussianNoise>
+      <frameName>map</frameName>
+      <xyzOffsets>0 0 0</xyzOffsets>
+      <rpyOffsets>0 0 0</rpyOffsets> -->
+    </plugin>
+
+    <plugin name="cable_groundtruth" filename="libgazebo_ros_p3d.so">
+      <alwaysOn>true</alwaysOn>
+      <updateRate>50.0</updateRate>
+      <bodyName>cable_link_0</bodyName>
+      <topicName>odom</topicName>
+      <robotNamespace>/cable/</robotNamespace>
+      <gaussianNoise>0.0</gaussianNoise>
+      <frameName>map</frameName>
+      <xyzOffsets>0 0 0</xyzOffsets>
+      <rpyOffsets>0 0 0</rpyOffsets>
+    </plugin>
+
+    <!-- Force plugin -->
+
+    <plugin name="rb_link_force" filename="libgazebo_ros_f3d.so">
+      <alwaysOn>true</alwaysOn>
+      <updateRate>50.0</updateRate>
+      <bodyName>rb_link</bodyName>
+      <topicName>force</topicName>
+      <robotNamespace>/rb_link/</robotNamespace>
+    </plugin>
+
+    <plugin name="quadrotor_force" filename="libgazebo_ros_f3d.so">
+      <alwaysOn>true</alwaysOn>
+      <updateRate>50.0</updateRate>
+      <bodyName>base_link_0</bodyName>
+      <topicName>force</topicName>
+      <robotNamespace>/quad/</robotNamespace>
+    </plugin>
+
+    <plugin name="cable_force" filename="libgazebo_ros_f3d.so">
+      <alwaysOn>true</alwaysOn>
+      <updateRate>50.0</updateRate>
+      <bodyName>cable_link_0</bodyName>
+      <topicName>force</topicName>
+      <robotNamespace>/cable/</robotNamespace>
+    </plugin>
+  </gazebo>
 
 </robot>

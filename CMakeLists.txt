@@ -248,7 +248,7 @@ endif()
 
 # if SEND_ODOMETRY_DATA option is set, then full odometry data is sent instead of
 # only the visual pose estimate
-set(send_odometry "false")
+set(send_odometry "true")
 if (SEND_ODOMETRY_DATA)
   set(send_odometry "true")
   set(send_vision_estimation "false")
