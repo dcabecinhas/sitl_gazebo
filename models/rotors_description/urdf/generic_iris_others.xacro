@@ -155,4 +155,28 @@
     </xacro:bag_plugin_macro>
   </xacro:if>
 
+  <gazebo>
+  <!-- ROS ground truth -->
+
+    <plugin name="quadrotor_groundtruth" filename="libgazebo_ros_p3d.so">
+      <alwaysOn>true</alwaysOn>
+      <updateRate>50.0</updateRate>
+      <bodyName>${base_link}</bodyName>
+      <topicName>odom</topicName>
+      <robotNamespace>${namespace}</robotNamespace>
+      <!-- <gaussianNoise>0.0</gaussianNoise>
+      <frameName>map</frameName>
+      <xyzOffsets>0 0 0</xyzOffsets>
+      <rpyOffsets>0 0 0</rpyOffsets> -->
+    </plugin>
+
+    <plugin name="quadrotor_force" filename="libgazebo_ros_f3d.so">
+      <alwaysOn>true</alwaysOn>
+      <updateRate>50.0</updateRate>
+      <bodyName>${base_link}</bodyName>
+      <topicName>force</topicName>
+      <robotNamespace>${namespace}</robotNamespace>
+    </plugin>
+  </gazebo>
+
 </robot>

@@ -81,6 +81,30 @@
       <material>Gazebo/${cable_color}</material>
     </gazebo>
 
+    <gazebo>
+    <!-- ROS ground truth -->
+
+      <plugin name="cable_${cable_number}_groundtruth" filename="libgazebo_ros_p3d.so">
+        <alwaysOn>true</alwaysOn>
+        <updateRate>50.0</updateRate>
+        <bodyName>cable_link_${cable_number}</bodyName>
+        <topicName>odom</topicName>
+        <robotNamespace>cable_${cable_number}</robotNamespace>
+        <!-- <gaussianNoise>0.0</gaussianNoise>
+        <frameName>map</frameName>
+        <xyzOffsets>0 0 0</xyzOffsets>
+        <rpyOffsets>0 0 0</rpyOffsets> -->
+      </plugin>
+
+      <plugin name="cable_${cable_number}_force" filename="libgazebo_ros_f3d.so">
+        <alwaysOn>true</alwaysOn>
+        <updateRate>50.0</updateRate>
+        <bodyName>cable_link_${cable_number}</bodyName>
+        <topicName>force</topicName>
+        <robotNamespace>cable_${cable_number}</robotNamespace>
+      </plugin>
+    </gazebo>
+
   </xacro:macro>
 
   <!-- Spherical joint emulation Macro -->
@@ -204,6 +228,31 @@
     <gazebo reference="rb_link">
       <material>Gazebo/${rb_color}</material>
     </gazebo>
+
+    <gazebo>
+    <!-- ROS ground truth -->
+
+      <plugin name="load_groundtruth" filename="libgazebo_ros_p3d.so">
+        <alwaysOn>true</alwaysOn>
+        <updateRate>50.0</updateRate>
+        <bodyName>rb_link</bodyName>
+        <topicName>odom</topicName>
+        <robotNamespace>load</robotNamespace>
+        <!-- <gaussianNoise>0.0</gaussianNoise>
+        <frameName>map</frameName>
+        <xyzOffsets>0 0 0</xyzOffsets>
+        <rpyOffsets>0 0 0</rpyOffsets> -->
+      </plugin>
+
+      <plugin name="load_force" filename="libgazebo_ros_f3d.so">
+        <alwaysOn>true</alwaysOn>
+        <updateRate>50.0</updateRate>
+        <bodyName>rb_link</bodyName>
+        <topicName>force</topicName>
+        <robotNamespace>load</robotNamespace>
+      </plugin>
+    </gazebo>
+
   </xacro:macro>
 
 
