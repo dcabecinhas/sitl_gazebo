@@ -227,7 +227,10 @@ add_custom_target(sdf ALL DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/models/iris/iris.s
 # Custom sdf models - Rigid-body load transportation
 
 set(sdf_models
-  rigid_body_load_1_vehicle
+  point_mass_load_1_vehicle
+  point_mass_load_2_vehicles
+  point_mass_load_3_vehicles
+  point_mass_load_4_vehicles
   rigid_body_load_2_vehicles
   rigid_body_load_3_vehicles
   rigid_body_load_4_vehicles

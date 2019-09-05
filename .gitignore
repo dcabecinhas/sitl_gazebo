@@ -5,6 +5,7 @@ scripts/schemas
 *~
 models/iris/*.sdf
 models/rigid_body*/*.sdf
+models/point_mass*/*.sdf
 *.pyc
 .*.sw?
 *-gen.sdf
