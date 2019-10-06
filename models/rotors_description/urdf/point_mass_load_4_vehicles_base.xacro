@@ -28,7 +28,7 @@
   <xacro:arg name='log_file' default='iris' />
 
   <!-- Rigid body load -->
-  <xacro:arg name='rb_mass' default='1.0' />
+  <xacro:arg name='rb_mass' default='1.2' />
   <xacro:arg name='rb_length' default='0.1' />
   <xacro:arg name='rb_width' default='0.1' />
   <xacro:arg name='rb_height' default='0.1' />

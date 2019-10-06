@@ -35,7 +35,7 @@
     </physics>
     <gui fullscreen='0'>
       <camera name='user_camera'>
-        <pose>-6 2.5 3 0 0.2 0</pose>
+        <pose>0 -6 3 0 0.3 1.57</pose>
         <view_controller>orbit</view_controller>
         <projection_type>perspective</projection_type>
         <!-- <track_visual>
