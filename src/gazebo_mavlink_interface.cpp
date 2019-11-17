@@ -236,11 +236,14 @@ void GazeboMavlinkInterface::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf
     presetManager->GetCurrentProfileParam("real_time_update_rate", param);
     double real_time_update_rate = boost::any_cast<double>(param);
     const double correct_real_time_update_rate = 250.0;
+    // DEBUG - see https://github.com/PX4/sitl_gazebo/issues/336
+    real_time_update_rate = 250.0;
     if (real_time_update_rate != correct_real_time_update_rate)
     {
       gzerr << "real_time_update_rate is set to " << real_time_update_rate
             << " instead of " << correct_real_time_update_rate << ", aborting.\n";
-      abort();
+      gzerr << "see https://github.com/PX4/sitl_gazebo/issues/336\n";
+      // abort();
     }
 
     presetManager->GetCurrentProfileParam("max_step_size", param);
