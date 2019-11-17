@@ -69,12 +69,12 @@
           <cylinder length="${cable_length}" radius="${cable_radius}"/> <!-- [m] [m] [m] -->
         </geometry>
       </visual>
-      <collision>
+      <!-- <collision>
         <xacro:insert_block name="cable_attachment_origin" />
         <geometry>
           <cylinder length="${cable_length}" radius="${cable_radius}"/>
         </geometry>
-      </collision>
+      </collision> -->
     </link>
 
     <gazebo reference="cable_link_${cable_number}">
